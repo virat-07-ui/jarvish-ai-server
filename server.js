@@ -33,13 +33,27 @@ app.post("/ai", async (req, res) => {
 
     const data = await response.json();
 
-    console.log("Gemini raw response:", data);
+// 🔥 DEBUG LOG
+console.log("FULL GEMINI RESPONSE 👇");
+console.log(JSON.stringify(data, null, 2));
 
-    const reply =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Gemini did not return text";
+if (data.error) {
+  return res.json({
+    reply: "Gemini ERROR: " + data.error.message
+  });
+}
 
-    res.json({ reply });
+const reply =
+  data.candidates &&
+  data.candidates[0] &&
+  data.candidates[0].content &&
+  data.candidates[0].content.parts &&
+  data.candidates[0].content.parts[0] &&
+  data.candidates[0].content.parts[0].text
+    ? data.candidates[0].content.parts[0].text
+    : "Gemini replied but NO TEXT";
+
+res.json({ reply });
   } catch (err) {
     console.error(err);
     res.json({ reply: "Server error" });
