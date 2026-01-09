@@ -13,23 +13,22 @@ app.get("/", (req, res) => {
 app.post("/ai", async (req, res) => {
   try {
     const userText = req.body.text;
-console.log("API KEY LENGTH:", process.env.GEMINI_API_KEY?.length);
+
+    console.log("API KEY LENGTH:", process.env.GEMINI_API_KEY?.length);
+
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" +
-        process.env.GEMINI_API_KEY,
+      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent",
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "x-goog-api-key": process.env.GEMINI_API_KEY
         },
         body: JSON.stringify({
           contents: [
             {
-              parts: [
-                {
-                  text: userText
-                }
-              ]
+              role: "user",
+              parts: [{ text: userText }]
             }
           ]
         })
