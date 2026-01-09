@@ -9,26 +9,22 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Jarvish backend is running");
 });
+
 app.post("/ai", async (req, res) => {
   try {
     const userText = req.body.text;
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" +
+      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" +
         process.env.GEMINI_API_KEY,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [
             {
-              parts: [
-                {
-                  text: userText
-                }
-              ]
+              role: "user",
+              parts: [{ text: userText }]
             }
           ]
         })
@@ -37,9 +33,11 @@ app.post("/ai", async (req, res) => {
 
     const data = await response.json();
 
+    console.log("Gemini raw response:", data);
+
     const reply =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Gemini response empty";
+      data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "Gemini did not return text";
 
     res.json({ reply });
   } catch (err) {
@@ -47,8 +45,8 @@ app.post("/ai", async (req, res) => {
     res.json({ reply: "Server error" });
   }
 });
-const PORT = process.env.PORT || 3000;
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Jarvish backend running on port", PORT);
 });
