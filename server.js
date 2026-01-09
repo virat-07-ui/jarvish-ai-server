@@ -9,7 +9,6 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Jarvish backend is running");
 });
-
 app.post("/ai", async (req, res) => {
   try {
     const userText = req.body.text;
@@ -21,23 +20,25 @@ app.post("/ai", async (req, res) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: userText }] }]
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: userText }]
+            }
+          ]
         })
       }
     );
 
     const data = await response.json();
+
     const reply =
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No response from Gemini";
+      "Gemini did not return text";
 
     res.json({ reply });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ reply: "Server error" });
+  } catch (err) {
+    console.error(err);
+    res.json({ reply: "Gemini server error" });
   }
-});
-
-app.listen(3000, () => {
-  console.log("Jarvish backend running");
 });
