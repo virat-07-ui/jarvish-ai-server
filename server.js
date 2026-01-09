@@ -42,3 +42,8 @@ app.post("/ai", async (req, res) => {
     res.json({ reply: "Gemini server error" });
   }
 });
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Jarvish backend running on port", PORT);
+});
