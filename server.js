@@ -20,13 +20,20 @@ app.post("/ai", async (req, res) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: userText }]
-            }
-          ]
-        })
+  contents: [
+    {
+      parts: [
+        {
+          text: userText
+        }
+      ]
+    }
+  ],
+  generationConfig: {
+    temperature: 0.7,
+    maxOutputTokens: 256
+  }
+})
       }
     );
 
